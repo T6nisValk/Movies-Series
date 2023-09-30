@@ -39,6 +39,9 @@ class Movie(Base):
     release_year = Column(Integer, nullable=False)
     rating = Column(Integer, nullable=False)
 
+    user = relationship("Users", secondary=user_movies, back_populates="movies")
+    watch_list = relationship("WatchList", secondary=watch_list_movies, back_populates="movies")
+
 
 class Series(Base):
     __tablename__ = "series"
@@ -48,6 +51,9 @@ class Series(Base):
     release_year = Column(Integer, nullable=False)
     rating = Column(Integer, nullable=False)
     seasons = Column(Integer, nullable=False)
+
+    user = relationship("Users", secondary=user_series, back_populates="series")
+    watch_list = relationship("WatchList", secondary=watch_list_series, back_populates="series")
 
 
 class User(Base):
@@ -60,6 +66,9 @@ class User(Base):
     # Can access watch lists and if deleted, deletes all the watch lists for this user - One To Many
     watch_lists = relationship("WatchList", back_populates="user", cascade="all, delete-orphan")
 
+    movies = relationship("Movies", secondary=user_movies, back_populates="user")
+    series = relationship("Series", secondary=user_series, back_populates="user")
+
 
 class WatchList(Base):
     __tablename__ = "watch_list"
@@ -71,6 +80,9 @@ class WatchList(Base):
 
     # Can access user - One To Many
     user = relationship("User", back_populates="watch_lists")
+
+    movies = relationship("Movies", secondary=user_movies, back_populates="watch_list")
+    series = relationship("Series", secondary=user_series, back_populates="watch_list")
 
 
 if __name__ == "__main__":
