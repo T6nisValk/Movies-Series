@@ -4,7 +4,7 @@ from sqlalchemy.orm import declarative_base, relationship
 engine = create_engine("sqlite:///metflix.db")
 Base = declarative_base()
 
-
+# Intermediate tables
 user_series = Table(
     "user_series",
     Base.metadata,
@@ -39,6 +39,7 @@ class Movie(Base):
     release_year = Column(Integer, nullable=False)
     rating = Column(Integer, nullable=False)
 
+    # Many to many
     user = relationship("Users", secondary=user_movies, back_populates="movies")
     watch_list = relationship("WatchList", secondary=watch_list_movies, back_populates="movies")
 
@@ -52,6 +53,7 @@ class Series(Base):
     rating = Column(Integer, nullable=False)
     seasons = Column(Integer, nullable=False)
 
+    # Many to many
     user = relationship("Users", secondary=user_series, back_populates="series")
     watch_list = relationship("WatchList", secondary=watch_list_series, back_populates="series")
 
@@ -63,9 +65,9 @@ class User(Base):
     name = Column(String(255), nullable=False)
     surname = Column(String(255), default="")
 
-    # Can access watch lists and if deleted, deletes all the watch lists for this user - One To Many
+    # One To Many
     watch_lists = relationship("WatchList", back_populates="user", cascade="all, delete-orphan")
-
+    # Many to many
     movies = relationship("Movies", secondary=user_movies, back_populates="user")
     series = relationship("Series", secondary=user_series, back_populates="user")
 
@@ -78,9 +80,9 @@ class WatchList(Base):
     watch_list_creation_date = Column(String(255), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
 
-    # Can access user - One To Many
+    # One To Many
     user = relationship("User", back_populates="watch_lists")
-
+    # Many to many
     movies = relationship("Movies", secondary=user_movies, back_populates="watch_list")
     series = relationship("Series", secondary=user_series, back_populates="watch_list")
 
